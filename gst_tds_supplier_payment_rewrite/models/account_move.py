@@ -1,5 +1,6 @@
+import json
+
 from odoo import api, fields, models, _
-from odoo.tools import float_is_zero, json
 
 
 class AccountTaxTDS(models.Model):
