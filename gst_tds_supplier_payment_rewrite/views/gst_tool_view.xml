@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="gstr1_tool_tree" model="ir.ui.view">
+            <field name="name">gst.return.tool.tree</field>
+            <field name="model">gst.return.tool</field>
+            <field name="arch" type="xml">
+                <tree string="GSTR" default_order='create_date desc'>
+                    <field name="name"/>
+                    <field name="fy_id" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                    <field name="status" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                    <field name="start_date" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                    <field name="end_date" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                    <field name="create_date" groups="gst_tds_supplier_payment_rewrite.gst_admin_access,gst_tds_supplier_payment_rewrite.gst_user_access"/>
+                    <field name="company_id" groups="base.group_system"/>
+                </tree>
+            </field>
+        </record>
+        <record id="gstr1_tool_form" model="ir.ui.view">
+            <field name="name">gst.return.tool.form</field>
+            <field name="model">gst.return.tool</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="GSTR1" groups="gst_tds_supplier_payment_rewrite.gst_admin_access,gst_tds_supplier_payment_rewrite.gst_user_access">
+                    <header>
+                        <field name="status" widget="statusbar" />
+                        <button name="reset_invoice" string="Reset" type="object" class="oe_highlight" icon="fa-undo" attrs="{'invisible': [('status','=','yet_to_upload')]}" groups="gst_tds_supplier_payment_rewrite.gst_admin_access" confirm="Are you sure you want to reset gst invoices?"/>
+                        <button name="generate_documents" string="Generate CSV" type="object" class="oe_highlight" icon="fa-file-excel-o" attrs="{'invisible': [('status','!=','yet_to_upload')]}" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                         <button name="upload_status" string="Upload" type="object" class="oe_highlight" icon="fa-upload" attrs="{'invisible': [('status','!=','ready_upload')]}"/>
+                         <button name="filed_status" string="Filed" type="object" class="oe_highlight" icon="fa-file" attrs="{'invisible': [('status','!=','upload_complete')]}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box" groups="gst_tds_supplier_payment_rewrite.gst_admin_access">
+                            <button name="get_invoice_action"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-text-o"
+                                attrs="{'invisible': [('count_invoice', '=', 0)]}">
+                                <field name="count_invoice" widget="statinfo" string="Invoices"/>
+                            </button>
+                            <button name="action_view_attachment"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-paperclip"
+                                attrs="{'invisible': [('count_attachment', '=', 0)]}">
+                                <field name="count_attachment" widget="statinfo" string="Attachments"/>
+                            </button>
+                        </div>
+                        <h1>
+                            <field name="name" class="oe_inline" readonly='1'/>
+                        </h1>
+                        <h2>
+                            <field name="gst_return_type" class="oe_inline"/>
+                        </h2>
+                        <group groups="gst_tds_supplier_payment_rewrite.gst_admin_access,gst_tds_supplier_payment_rewrite.gst_user_access">
+                            <group col="2">
+                                <field name="fy_id" required="1" attrs="{'readonly': [('status','!=','yet_to_upload')]}"/>
+                                <field name="start_date" required="1" attrs="{'readonly': [('status','!=','yet_to_upload')]}"/>
+                                <field name="end_date" required="1" attrs="{'readonly': [('status','!=','yet_to_upload')]}"/>
+                                <field name="reverse_charge" attrs="{'readonly': [('status','!=','yet_to_upload')]}"/>
+                            </group>
+                            <group>
+                                <field name="gross_turnover" required="1" attrs="{'readonly': [('status','!=','yet_to_upload')]}"/>
+                                <field name="current_gross_turnover" required="1" attrs="{'readonly': [('status','!=','yet_to_upload')]}"/>
+                                <field name="company_id" attrs="{'readonly': [('status','!=','yet_to_upload')]}" groups="base.group_system"/>
+                            </group>
+                        </group>
+
+                        <button name="fetch_invoice_details" string="Fetch Invoices" type="object" class="btn-success" style="margin-right:5px;margin-bottom:5px;" icon="fa-get-pocket" attrs="{'invisible': [('status','!=','yet_to_upload')]}" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                        <button name="generate_b2b_csv" string="B2B CSV" type="object" class="btn-success" style="margin-right:5px;margin-bottom:5px;" icon="fa-download" attrs="{'invisible': [('status','!=','ready_upload')]}" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                        <button name="generate_b2cs_csv" string="B2CS CSV" type="object" class="btn-success" style="margin-right:5px;margin-bottom:5px;" icon="fa-download" attrs="{'invisible': [('status','!=','ready_upload')]}" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                        <button name="generate_b2cl_csv" string="B2CL CSV" type="object" class="btn-success" style="margin-right:5px;margin-bottom:5px;" icon="fa-download" attrs="{'invisible': [('status','!=','ready_upload')]}" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                        <button name="generate_csv" string="Export CSV" type="object" class="btn-success" style="margin-right:5px;margin-bottom:5px;" icon="fa-download" attrs="{'invisible': [('status','!=','ready_upload')]}" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                        <button name="generate_hsn_csv" string="HSN CSV" type="object" class="btn-success" style="margin-right:5px;margin-bottom:5px;" icon="fa-download" attrs="{'invisible': [('status','!=','ready_upload')]}" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                        <button name="generate_json" string="Json" type="object" class="btn-success" style="margin-right:5px;margin-bottom:5px;" icon="fa-code" attrs="{'invisible': [('status','!=','ready_upload')]}" groups="gst_tds_supplier_payment_rewrite.gst_admin_access"/>
+                        <field name="gst_lines" groups="gst_tds_supplier_payment_rewrite.gst_admin_access" widget="many2many" attrs="{'readonly': [('status','!=','yet_to_upload')]}">
+                            <tree>
+                                <field name="name"/>
+
+                                <field name="partner_id"/>
+                                <field name="currency_id"/>
+                                <field name="amount_total_signed"/>
+                                <field name="amount_total"/>
+                                <field name="invoice_date"/>
+                                <field name="state"/>
+                                <field name="type"/>
+                                <field name="invoice_type_status"/>
+                                <field name="invoice_type"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_gstr_filter" model="ir.ui.view">
+            <field name="name">gst.return.tool.select</field>
+            <field name="model">gst.return.tool</field>
+            <field name="arch" type="xml">
+                <search string="GST Invoice">
+                    <field name="name" string="GST Invoice" filter_domain="[('name','ilike',self)]"/>
+                    <filter name="yet_to_upload" string="Not Uploaded" domain="[('status','=','yet_to_upload')]"/>
+                    <filter name="ready_upload" string="Ready To Upload" domain="[('status','=','ready_upload')]"/>
+                    <filter name="upload_complete" string="Uploaded To Govt" domain="[('status','=','upload_complete')]"/>
+                    <filter name="filed" string="Filed" domain="[('status','=','filed')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Invoice Status" name="filter_by_status" domain="[]" context="{'group_by':'status'}"/>
+                        <filter string="Company" name="filter_by_company" domain="[]" context="{'group_by':'company_id'}" groups="base.group_system"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+    </data>
+</odoo>

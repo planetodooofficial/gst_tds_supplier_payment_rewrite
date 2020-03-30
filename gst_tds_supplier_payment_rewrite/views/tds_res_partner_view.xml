@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+	<record id="view_partner_tds_inherit" model="ir.ui.view">
+	    <field name="name">res.partner.tds.inherit</field>
+	    <field name="model">res.partner</field>
+	    <field name="inherit_id" ref="base.view_partner_form"/>
+	    <field name="arch" type="xml">
+	    	<xpath expr="//notebook/page[@name='internal_notes']" position="before">
+	    		<page name="tds_threshold" string="TDS Threshold">
+	    			<div>
+	    				<label for="check_threshold" string="Apply TDS/Withholding if threshold is crossed"/>
+	    				<field name="check_threshold"/>
+	    			</div>
+	    		</page>
+	    	</xpath>
+	    </field>
+	</record>
+    <record id="gstr2_invoice_view_partner_form" model="ir.ui.view">
+        <field name="name">gst.invoice.res.partner.partner_type.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="l10n_in.l10n_in_view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="vat" position="after">
+                <label for="partner_type"/>
+                <div name="partner_type" class="o_row">
+                    <field name="partner_type"/>
+                </div>
+            </field>
+        </field>
+    </record>
+</odoo>

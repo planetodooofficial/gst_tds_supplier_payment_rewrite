@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="gst_uom_map_tree" model="ir.ui.view">
+            <field name="name">uom.mapping.tree</field>
+            <field name="model">uom.mapping</field>
+            <field name="arch" type="xml">
+                <tree string="Mapping Unit of Measure" editable="bottom">
+                    <field name="name"
+                           required="1"
+                           groups="gst_tds_supplier_payment_rewrite.gst_admin_access,
+                                   gst_tds_supplier_payment_rewrite.gst_user_access"/>
+                    <field name="uom"
+                           required="1"
+                           groups="gst_tds_supplier_payment_rewrite.gst_admin_access,
+                                   gst_tds_supplier_payment_rewrite.gst_user_access"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="gst_uom_map_action" model="ir.actions.act_window">
+            <field name="name">Mapping Unit of Measure</field>
+            <field name="res_model">uom.mapping</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="gst_uom_map_tree"/>
+        </record>
+    </data>
+</odoo>

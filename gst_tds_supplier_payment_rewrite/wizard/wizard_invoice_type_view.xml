@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="gst_invoice_wizard_type" model="ir.ui.view">
+            <field name="name">gst.invoice.wizard.type</field>
+            <field name="model">invoice.type.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Invoice Type">
+                    <separator string="GST"/>
+                    <group string="GST">
+                        <group col="2">
+                            <field name="invoice_type_status" />
+                            <field name="l10n_in_export_type" />
+                            <field name="invoice_type" />
+                            <field name="export" class="oe_inline" attrs="{'invisible':[('invoice_type','!=','export')]}"/>
+                        </group>
+                        <group col="2">
+                            <field name="avail_itc_eligible" />
+                            <field name="reverse_charge" />
+                            <field name="portcode_id" />
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="update_invoices" string="Done" type="object"/>
+                        <button string="Cancel" class="oe_highlight" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
