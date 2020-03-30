@@ -8,11 +8,12 @@ class PaymentAccountTDS(models.Model):
     vendor_type = fields.Selection(related='partner_id.company_type', string='Select Partner')
     apply_tds = fields.Boolean('Apply TDS', default=False)
     tds_added = fields.Float('TDS amount added')
-    origin = fields.Char(string='Source Document', help="Reference of the document that generated this from purchase order request.")
+    origin = fields.Char(string='Source Document',
+                         help="Reference of the document that generated this from purchase order request.")
     purchase_id = fields.Many2one('purchase.order', 'Purchase Order')
     amount_untaxed = fields.Float('Untaxed Amount')
     amount_tax = fields.Float('Taxes')
-    amount_to_pay = fields.Float('Amount to Pay',required=True)
+    amount_to_pay = fields.Float('Amount to Pay', required=True)
 
     @api.model
     def default_get(self, fields):
@@ -56,9 +57,11 @@ class PaymentAccountTDS(models.Model):
                 applicable = True
                 if payment.partner_id and payment.partner_id.tds_threshold_check:
                     if payment.purchase_id:
-                        applicable = self.check_turnover(self.partner_id.id, self.tds_tax_id.payment_excess, self.amount_to_pay)
+                        applicable = self.check_turnover(self.partner_id.id, self.tds_tax_id.payment_excess,
+                                                         self.amount_to_pay)
                     else:
-                        applicable = self.check_turnover(self.partner_id.id, self.tds_tax_id.payment_excess, self.amount)
+                        applicable = self.check_turnover(self.partner_id.id, self.tds_tax_id.payment_excess,
+                                                         self.amount)
                 if applicable:
                     if payment.purchase_id:
                         payment.tds_amt = (payment.tds_tax_id.amount * payment.amount_untaxed / 100)
@@ -68,7 +71,6 @@ class PaymentAccountTDS(models.Model):
                         payment.tds_amt = (payment.tds_tax_id.amount * payment.amount / 100)
                 else:
                     payment.tds_amt = 0.0
-
 
     def turnover_compute(self, partner_id, limit, amount):
         if self.payment_type == 'outbound':
