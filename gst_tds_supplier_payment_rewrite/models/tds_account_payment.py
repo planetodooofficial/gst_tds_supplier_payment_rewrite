@@ -48,27 +48,55 @@ class PaymentAccountTDS(models.Model):
         res = super(PaymentAccountTDS, self).write(vals)
         return res
 
-    @api.onchange('tds', 'tds_tax_id', 'amount', 'amount_untaxed', 'amount_tax', 'amount_to_pay')
-    @api.depends('tds', 'tds_tax_id', 'amount', 'amount_untaxed', 'amount_tax', 'amount_to_pay')
+    # Nilesh Comment
+    # @api.onchange('tds', 'tds_tax_id', 'amount', 'amount_untaxed', 'amount_tax', 'amount_to_pay')
+    # @api.depends('tds', 'tds_tax_id', 'amount', 'amount_untaxed', 'amount_tax', 'amount_to_pay')
+    # def onchange_tds(self):
+    #     """Override : To pass amount_untaxed value instead of amount"""
+    #     for payment in self:
+    #         if payment.tds and payment.tds_tax_id:
+    #             applicable = True
+    #             if payment.partner_id and payment.partner_id.tds_threshold_check:
+    #                 if payment.purchase_id:
+    #                     applicable = self.check_turnover(self.partner_id.id, self.tds_tax_id.payment_excess,
+    #                                                      self.amount_to_pay)
+    #                 else:
+    #                     applicable = self.check_turnover(self.partner_id.id, self.tds_tax_id.payment_excess,
+    #                                                      self.amount)
+    #             if applicable:
+    #                 if payment.purchase_id:
+    #                     payment.tds_amt = (payment.tds_tax_id.amount * payment.amount_untaxed / 100)
+    #                     payment.amount_to_pay = payment.amount_untaxed + payment.amount_tax - payment.tds_amt
+    #                     payment.amount = payment.amount_untaxed + payment.amount_tax - payment.tds_amt
+    #                 else:
+    #                     payment.tds_amt = (payment.tds_tax_id.amount * payment.amount / 100)
+    #             else:
+    #                 payment.tds_amt = 0.0
+
+    @api.onchange('apply_tds', 'tds_ids', 'amount', 'amount_untaxed', 'amount_tax', 'amount_to_pay')
+    @api.depends('apply_tds', 'tds_ids', 'amount', 'amount_untaxed', 'amount_tax', 'amount_to_pay')
     def onchange_tds(self):
         """Override : To pass amount_untaxed value instead of amount"""
         for payment in self:
-            if payment.tds and payment.tds_tax_id:
+            if payment.apply_tds and payment.tds_ids:
                 applicable = True
-                if payment.partner_id and payment.partner_id.tds_threshold_check:
+                if payment.partner_id and payment.partner_id.check_threshold:
+                    # if payment.partner_id and payment.partner_id.tds_threshold_check:  Nilesh Comment
                     if payment.purchase_id:
-                        applicable = self.check_turnover(self.partner_id.id, self.tds_tax_id.payment_excess,
-                                                         self.amount_to_pay)
+                        applicable = self.turnover_compute(self.partner_id.id, self.tds_ids.payment_excess,
+                                                           self.amount_to_pay)
                     else:
-                        applicable = self.check_turnover(self.partner_id.id, self.tds_tax_id.payment_excess,
-                                                         self.amount)
+                        # applicable = self.turnover_compute(self.partner_id.id, self.tds_ids.payment_excess,
+                        #                                  self.amount)  Nilesh Comment
+                        applicable = self.turnover_compute(self.partner_id.id, self.tds_ids.excess_of,
+                                                           self.amount)
                 if applicable:
                     if payment.purchase_id:
-                        payment.tds_amt = (payment.tds_tax_id.amount * payment.amount_untaxed / 100)
+                        payment.tds_amt = (payment.tds_ids.amount * payment.amount_untaxed / 100)
                         payment.amount_to_pay = payment.amount_untaxed + payment.amount_tax - payment.tds_amt
                         payment.amount = payment.amount_untaxed + payment.amount_tax - payment.tds_amt
                     else:
-                        payment.tds_amt = (payment.tds_tax_id.amount * payment.amount / 100)
+                        payment.tds_amt = (payment.tds_ids.amount * payment.amount / 100)
                 else:
                     payment.tds_amt = 0.0
 
